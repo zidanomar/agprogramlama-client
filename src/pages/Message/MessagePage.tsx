@@ -1,14 +1,16 @@
-import React from 'react';
-import * as API from 'src/api';
-export default function MessagePage() {
-  React.useEffect(() => {
-    async function getAuth() {
-      const res = await API.getAuth();
-      console.log(res);
-    }
+import { useQuery } from '@tanstack/react-query';
 
-    getAuth();
-  }, []);
+import { Navigate } from 'react-router-dom';
+
+import * as API from 'src/api';
+
+export default function MessagePage() {
+  const { error } = useQuery({
+    queryKey: ['user/auth'],
+    queryFn: API.getUserAuth,
+  });
+
+  if (error) return <Navigate to='/login' />;
 
   return <div>MessagePage</div>;
 }
