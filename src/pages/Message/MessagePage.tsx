@@ -1,16 +1,14 @@
-import { useQuery } from '@tanstack/react-query';
-
-import { Navigate } from 'react-router-dom';
-
-import * as API from 'src/api';
+import SideMenu from './components/SideMenu';
 
 export default function MessagePage() {
-  const { error } = useQuery({
-    queryKey: ['user/auth'],
-    queryFn: API.getUserAuth,
-  });
-
-  if (error) return <Navigate to='/login' />;
-
-  return <div>MessagePage</div>;
+  return (
+    <div className='w-full h-screen flex'>
+      <div className='w-1/5 h-screen max-h-screen bg-dark overflow-y-auto'>
+        <SideMenu />
+      </div>
+      <div className='w-4/5 h-screen max-h-screen bg-darkest overflow-y-auto'>
+        <div>message</div>
+      </div>
+    </div>
+  );
 }
