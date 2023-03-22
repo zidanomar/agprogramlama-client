@@ -20,14 +20,8 @@ export default function RegisterForm() {
 
   const { mutate, isLoading, error } = useMutation(API.register, {
     onSuccess: (data) => {
-      // emailRef.current!.value = '';
-      // passwordRef.current!.value = '';
-      // firstNameRef.current!.value = '';
-      // lastNameRef.current!.value = '';
-      // imageUriRef.current!.value = '';
-
       localStorage.setItem('access_token', data.access_token);
-      navigate('/message');
+      navigate('/');
     },
     onError: (error) => {
       console.log(error);
