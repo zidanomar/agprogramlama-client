@@ -1,8 +1,13 @@
 import axios from 'axios';
+import { io } from 'socket.io-client';
+
 import { IUserLogin, IUserRegister } from 'src/interfaces';
 
+const URL = import.meta.env.VITE_API_BASE_URL;
+
+export const socket = io(URL);
 export const API = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: URL + '/api',
   timeout: 1000 * 60,
 });
 

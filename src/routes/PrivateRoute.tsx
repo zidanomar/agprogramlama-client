@@ -8,7 +8,7 @@ export default function PrivateRoute({
   children: React.ReactNode;
 }): JSX.Element {
   const { isAuthenticated } = useAuth();
-
+  console.log('isAuthenticated', isAuthenticated);
   return isAuthenticated ? (
     <>{children}</>
   ) : (

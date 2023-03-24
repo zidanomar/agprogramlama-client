@@ -7,11 +7,7 @@ import PrivateRoute from './PrivateRoute';
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: (
-      <PrivateRoute>
-        <MessagePage />
-      </PrivateRoute>
-    ),
+    element: <MessagePage />,
   },
   {
     path: '/login',
