@@ -1,11 +1,16 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { MessagePage } from 'src/pages';
 import LoginPage from '../pages/Login/LoginPage';
+import PrivateRoute from './PrivateRoute';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <MessagePage />,
+    element: (
+      <PrivateRoute>
+        <MessagePage />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/login',
