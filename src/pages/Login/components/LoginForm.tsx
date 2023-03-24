@@ -15,9 +15,6 @@ export default function LoginForm() {
 
   const { mutate, isLoading, error } = useMutation(API.login, {
     onSuccess: (data) => {
-      // emailRef.current!.value = '';
-      // passwordRef.current!.value = '';
-
       localStorage.setItem('access_token', data.access_token);
       navigate('/');
     },

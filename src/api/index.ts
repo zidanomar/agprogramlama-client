@@ -16,8 +16,8 @@ API.interceptors.request.use((req) => {
   return req;
 });
 
-export const getUserAuth = async () => {
-  const { data } = await API.get('/auth/user');
+export const getCurrentUser = async () => {
+  const { data } = await API.get('/users');
 
   return data;
 };
