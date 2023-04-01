@@ -21,8 +21,12 @@ API.interceptors.request.use((req) => {
   return req;
 });
 
-export const getCurrentUser = async (): Promise<{ user: User }> => {
-  const { data } = await API.get('/users');
+export const getCurrentUser = async (): Promise<User> => {
+  const { data } = await API.get('/users', {
+    headers: {
+      'Cache-Control': 'no-cache',
+    },
+  });
 
   return data;
 };
