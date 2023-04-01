@@ -1,21 +1,29 @@
-export interface IUserAuth {
+export type User = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  imageUri?: string;
+};
+
+export type UserAuth = {
   id: number;
   firstName: string;
   lastName: string;
   email: string;
   iat: number;
   exp: number;
-}
+};
 
-export interface IUserLogin {
+export type UserLogin = {
   email: string;
   password: string;
-}
+};
 
-export interface IUserRegister {
+export type UserRegister = {
   email: string;
   password: string;
   firstName: string;
   lastName: string;
   imageUri?: string;
-}
+};

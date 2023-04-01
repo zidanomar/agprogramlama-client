@@ -1,16 +1,16 @@
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Button from 'src/components/Button';
 import Input from 'src/components/Input';
 import InputGroup from 'src/components/InputGroup';
 import Label from 'src/components/Label';
 
 import * as API from 'src/api';
+import { useAuth } from 'src/hooks';
 
 export default function RegisterForm() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const { setUser, user } = useAuth();
 
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -18,17 +18,7 @@ export default function RegisterForm() {
   const lastNameRef = useRef<HTMLInputElement>(null);
   const imageUriRef = useRef<HTMLInputElement>(null);
 
-  const { mutate, isLoading, error } = useMutation(API.register, {
-    onSuccess: (data) => {
-      localStorage.setItem('access_token', data.access_token);
-      navigate('/');
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
-
-  const onRegisterHandler = (event: React.FormEvent<HTMLFormElement>) => {
+  const onRegisterHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const email = emailRef.current?.value;
@@ -39,10 +29,23 @@ export default function RegisterForm() {
 
     if (!email || !password || !firstName || !lastName) return;
 
-    mutate({ email, password, firstName, lastName, imageUri });
-  };
+    try {
+      const { access_token } = await API.register({
+        email,
+        password,
+        firstName,
+        lastName,
+        imageUri,
+      });
 
-  if (isLoading) return <div>Loading...</div>;
+      localStorage.setItem('access_token', access_token);
+      setUser(user);
+      navigate('/');
+    } catch (error) {
+      navigate('/login');
+      setUser(null);
+    }
+  };
 
   return (
     <form onSubmit={onRegisterHandler}>

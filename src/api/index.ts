@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { io } from 'socket.io-client';
 
-import { IUserLogin, IUserRegister } from 'src/interfaces';
+import { User, UserLogin, UserRegister } from 'src/types';
 
 const URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -21,7 +21,7 @@ API.interceptors.request.use((req) => {
   return req;
 });
 
-export const getCurrentUser = async () => {
+export const getCurrentUser = async (): Promise<{ user: User }> => {
   const { data } = await API.get('/users');
 
   return data;
@@ -30,7 +30,7 @@ export const getCurrentUser = async () => {
 export const login = async ({
   email,
   password,
-}: IUserLogin): Promise<{ access_token: string }> => {
+}: UserLogin): Promise<{ access_token: string; user: User }> => {
   const { data } = await API.post('/auth/login', { email, password });
 
   return data;
@@ -42,8 +42,8 @@ export const register = async ({
   firstName,
   lastName,
   imageUri,
-}: IUserRegister): Promise<{ access_token: string }> => {
-  const { data } = await API.post('/users/register', {
+}: UserRegister): Promise<{ access_token: string; user: User }> => {
+  const { data } = await API.post('/auth/register', {
     email,
     password,
     firstName,

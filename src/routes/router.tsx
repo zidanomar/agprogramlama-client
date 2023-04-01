@@ -7,10 +7,20 @@ import PrivateRoute from './PrivateRoute';
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <MessagePage />,
-  },
-  {
-    path: '/login',
-    element: <LoginPage />,
+    element: <MainLayout />,
+    children: [
+      {
+        index: true,
+        element: (
+          <PrivateRoute>
+            <MessagePage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: '/login',
+        element: <LoginPage />,
+      },
+    ],
   },
 ]);

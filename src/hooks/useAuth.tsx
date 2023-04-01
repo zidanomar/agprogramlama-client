@@ -1,18 +1,29 @@
-import { useQuery } from '@tanstack/react-query';
+import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
+import { UserAuth } from 'src/types';
 
-import * as API from 'src/api';
-
-export default function useAuth() {
-  const { isLoading, error } = useQuery({
-    queryKey: ['user'],
-    queryFn: API.getCurrentUser,
-    staleTime: Infinity,
-    retry: false,
-  });
-
-  if (isLoading || error) {
-    return { isAuthenticated: false, isLoading: true };
-  }
-
-  return { isAuthenticated: true, isLoading: false };
+interface AuthContextProps {
+  user: UserAuth | null;
+  setUser: React.Dispatch<React.SetStateAction<any>>;
 }
+
+const initialUser: AuthContextProps = {
+  user: null,
+  setUser: () => {},
+};
+
+const AuthContext = createContext(initialUser);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<any>(null);
+
+  const value = {
+    user,
+    setUser,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+export const useAuth = () => {
+  return useContext(AuthContext);
+};

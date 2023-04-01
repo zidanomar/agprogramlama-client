@@ -7,11 +7,7 @@ export default function PrivateRoute({
 }: {
   children: React.ReactNode;
 }): JSX.Element {
-  const { isAuthenticated } = useAuth();
-  console.log('isAuthenticated', isAuthenticated);
-  return isAuthenticated ? (
-    <>{children}</>
-  ) : (
-    <Navigate to='/login' replace={true} />
-  );
+  const { user } = useAuth();
+  console.log(user);
+  return user ? <>{children}</> : <Navigate to='/login' replace={true} />;
 }

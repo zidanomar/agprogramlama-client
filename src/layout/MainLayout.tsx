@@ -1,10 +1,11 @@
-import { Outlet } from 'react-router-dom';
-import SideMenu from 'src/pages/Message/components/SideMenu';
-
+import { useEffect, useState } from 'react';
+import * as API from 'src/api';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { useAuth } from 'src/hooks';
 export default function MainLayout() {
-  return (
-    <main>
-      <Outlet />
-    </main>
-  );
+  const { setUser } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  return <main>{isLoading ? <div>Loading...</div> : <Outlet />}</main>;
 }
