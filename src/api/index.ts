@@ -4,18 +4,21 @@ import { io } from 'socket.io-client';
 import { User, UserLogin, UserRegister } from 'src/types';
 
 const URL = import.meta.env.VITE_API_BASE_URL;
+const ACCESS_TOKEN = localStorage.getItem('access_token');
 
-export const socket = io(URL);
+export const socket = io(URL, {
+  extraHeaders: {
+    Authorization: `Bearer ${ACCESS_TOKEN}`,
+  },
+});
 export const API = axios.create({
   baseURL: URL + '/api',
   timeout: 1000 * 60,
 });
 
 API.interceptors.request.use((req) => {
-  const token = localStorage.getItem('access_token');
-
-  if (token) {
-    req.headers['authorization'] = `Bearer ${token}`;
+  if (ACCESS_TOKEN) {
+    req.headers['authorization'] = `Bearer ${ACCESS_TOKEN}`;
   }
 
   return req;

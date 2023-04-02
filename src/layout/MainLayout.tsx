@@ -12,11 +12,9 @@ export default function MainLayout() {
     try {
       const user = await API.getCurrentUser();
 
-      console.log('user', user);
       setUser(user);
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
       setUser(null);
       setIsLoading(false);
       navigate('/login');
