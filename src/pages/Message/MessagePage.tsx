@@ -1,21 +1,55 @@
-import SideMenu from './components/SideMenu';
-import * as API from 'src/api';
-import { useAuth } from 'src/hooks';
-import Message from './components/Message';
+import { useEffect, useState } from 'react';
+// import { socket } from 'src/api';
+import io from 'socket.io-client';
 
-const socket = API.socket;
-
+export const socket = io('localhost:8080', {
+  extraHeaders: {
+    Authorization: `Bearer ${localStorage.getItem('token')}`,
+  },
+});
 export default function MessagePage() {
-  const { user } = useAuth();
+  const [messages, setMessages] = useState([]);
+  const [messageInput, setMessageInput] = useState('');
+  const [cpuUsage, setCpuUsage] = useState(0);
+
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log('Connected to WebSocket server');
+    });
+
+    socket.on('peformance', (data) => {
+      setCpuUsage(data);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  // @ts-ignore
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    socket.emit('message', messageInput);
+    setMessageInput('');
+  };
 
   return (
-    <div className='w-full h-screen flex'>
-      <div className='w-1/5 h-screen max-h-screen bg-dark overflow-y-auto p-8'>
-        <SideMenu />
-      </div>
-      <div className='w-4/5 h-screen max-h-screen bg-darkest overflow-y-auto p-8'>
-        <Message />
-      </div>
+    <div>
+      <h1>Realtime Chat</h1>
+      <ul>
+        {messages.map((message, i) => (
+          <li key={i}>{message}</li>
+        ))}
+      </ul>
+      <form onSubmit={handleSendMessage}>
+        <input
+          type='text'
+          value={messageInput}
+          onChange={(e) => setMessageInput(e.target.value)}
+        />
+        <button type='submit'>Send</button>
+        <h1>CPU Usage: {cpuUsage}%</h1>
+      </form>
     </div>
   );
 }

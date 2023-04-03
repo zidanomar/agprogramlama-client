@@ -11,6 +11,15 @@ export const socket = io(URL, {
     Authorization: `Bearer ${ACCESS_TOKEN}`,
   },
 });
+
+socket.on('connect', () => {
+  console.log('Connected to server!');
+});
+
+socket.on('events', (data) => {
+  console.log(data);
+});
+
 export const API = axios.create({
   baseURL: URL + '/api',
   timeout: 1000 * 60,

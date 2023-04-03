@@ -29,9 +29,13 @@ export default function LoginForm() {
 
       setUser(user);
       navigate('/');
+      API.socket.on('connect', () => {
+        console.log('Connected to WebSocket server!');
+      });
     } catch (error) {
       navigate('/login');
       setUser(null);
+      API.socket.disconnect();
     }
   };
 

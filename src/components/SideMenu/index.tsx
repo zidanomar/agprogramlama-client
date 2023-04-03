@@ -1,6 +1,7 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Button from 'src/components/Button';
 import { useAuth } from 'src/hooks';
+import Button from '../Button';
 
 export default function SideMenu() {
   const { setUser } = useAuth();
@@ -11,31 +12,13 @@ export default function SideMenu() {
     setUser(null);
     navigate('/login');
   };
-
   return (
     <div className='flex flex-col h-full'>
       <div className='h-24'>
         <div>profile</div>
       </div>
       <div className='flex flex-col gap-4 h-full my-8 overflow-auto'>
-        <div>a</div>
-        <div>a</div>
-        <div>a</div>
-        <div>a</div>
-        <div>a</div>
-        <div>a</div>
-        <div>a</div>
-        <div>a</div>
-        <div>a</div>
-        <div>a</div>
-        <div>a</div>
-        <div>a</div>
-        <div>a</div>
-        <div>a</div>
-        <div>a</div>
-        <div>a</div>
-        <div>a</div>
-        <div>a</div>
+        {/* get conversations */}
       </div>
       <div className='flex justify-center items-center'>
         <Button onClick={logoutHandler}>logout</Button>
