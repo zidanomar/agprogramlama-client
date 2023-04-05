@@ -2,7 +2,7 @@ import React from 'react';
 
 type Value = {
   value: any;
-  option: any;
+  label: any;
 };
 
 type DropdownProps = {
@@ -26,8 +26,8 @@ export default function Dropdown(props: DropdownProps) {
         {placeholder ? placeholder : 'Select'}
       </option>
       {values?.map((value) => (
-        <option className='py-2' value={value.value}>
-          {value.option}
+        <option className='py-4' value={value.value}>
+          {value.label}
         </option>
       ))}
     </select>
