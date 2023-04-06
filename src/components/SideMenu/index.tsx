@@ -4,7 +4,7 @@ import { useAuth } from 'src/hooks';
 import Button from '../Button';
 
 export default function SideMenu() {
-  const { setUser } = useAuth();
+  const { user, setUser } = useAuth();
   const navigate = useNavigate();
 
   const logoutHandler = () => {
@@ -15,7 +15,7 @@ export default function SideMenu() {
   return (
     <div className='flex flex-col h-full'>
       <div className='h-24'>
-        <div>profile</div>
+        <div>{user?.firstName}</div>
       </div>
       <div className='flex flex-col gap-4 h-full my-8 overflow-auto'>
         {/* get conversations */}

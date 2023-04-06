@@ -1,19 +1,8 @@
-export type User = {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  imageUri?: string;
-};
-
-export type UserAuth = {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
+import { User } from '@prisma/client';
+export interface UserAuth extends User {
   iat: number;
   exp: number;
-};
+}
 
 export type UserLogin = {
   email: string;

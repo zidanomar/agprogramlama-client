@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import Button from 'src/components/Button';
-import Dialog from 'src/components/Dialog';
 import Dropdown from 'src/components/Dropdown';
 import Input from 'src/components/Input';
 
 import * as API from 'src/api';
-import { User } from 'src/types';
+import { useAuth } from 'src/hooks';
+import { User, Message, Prisma } from '@prisma/client';
+import { SendMessage } from 'src/types';
 
 export default function ConversationPage() {
   const [receiverOption, setReceiverOption] = useState<User[]>([]);
-  const [receiver, setReceivers] = useState<User[]>([]);
+  const [receivers, setReceivers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  const { user } = useAuth();
 
   const fetchRecivers = async () => {
     setLoading(true);
@@ -39,12 +43,38 @@ export default function ConversationPage() {
   };
 
   const sendMessageHandler = () => {
-    console.log(receiver);
+    if (user) {
+      const conversation: SendMessage = {
+        sender: user,
+        receivers,
+        content: 'hello',
+      };
+      API.socket.emit('message:send', conversation);
+    }
     setReceivers([]);
   };
 
   useEffect(() => {
     fetchRecivers();
+  }, []);
+
+  useEffect(() => {
+    API.socket.on('userLoggedIn', (newUser) => {
+      // Update receiver list with new user
+      console.log(newUser);
+    });
+
+    // @ts-ignore
+    function handleMessage(message): void {
+      console.log(message);
+    }
+
+    API.socket.on('message:receive', handleMessage);
+
+    return () => {
+      API.socket.off('userLoggedIn');
+      API.socket.off('message:receive', handleMessage);
+    };
   }, []);
 
   return (
@@ -54,7 +84,6 @@ export default function ConversationPage() {
       ) : (
         <div>
           <Dropdown
-            placeholder='Select reciver'
             values={receiverOption.map((receiver) => ({
               value: JSON.stringify(receiver),
               label: `${receiver.firstName} ${receiver.lastName}`,
@@ -66,9 +95,9 @@ export default function ConversationPage() {
 
       <p>send to:</p>
 
-      {receiver.length > 0 && (
+      {receivers.length > 0 && (
         <div className='flex flex-col gap-4'>
-          {receiver.map((receiver) => (
+          {receivers.map((receiver) => (
             <p key={receiver.id}>
               {receiver.firstName} {receiver.lastName}
             </p>
@@ -78,7 +107,7 @@ export default function ConversationPage() {
 
       <div className='w-full flex absolute bottom-0 gap-8'>
         <Input className='bg-transparent text-white' />
-        <Button disabled={!receiver.length} onClick={sendMessageHandler}>
+        <Button disabled={!receivers.length} onClick={sendMessageHandler}>
           send
         </Button>
       </div>
