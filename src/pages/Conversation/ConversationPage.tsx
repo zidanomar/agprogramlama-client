@@ -7,6 +7,7 @@ import * as API from 'src/api';
 import { useAuth } from 'src/hooks';
 import { User, Message, Prisma } from '@prisma/client';
 import { SendMessage } from 'src/types';
+import { MESSAGE } from 'src/constants/socket.constant';
 
 export default function ConversationPage() {
   const [receiverOption, setReceiverOption] = useState<User[]>([]);
@@ -49,7 +50,7 @@ export default function ConversationPage() {
         receivers,
         content: 'hello',
       };
-      API.socket.emit('message:send', conversation);
+      API.socket.emit(MESSAGE['send-message'], conversation);
     }
     setReceivers([]);
   };
@@ -59,21 +60,14 @@ export default function ConversationPage() {
   }, []);
 
   useEffect(() => {
-    API.socket.on('userLoggedIn', (newUser) => {
-      // Update receiver list with new user
-      console.log(newUser);
-    });
-
-    // @ts-ignore
-    function handleMessage(message): void {
+    function handleMessage(message: any): void {
       console.log(message);
     }
 
-    API.socket.on('message:receive', handleMessage);
+    API.socket.on(MESSAGE['send-message'], handleMessage);
 
     return () => {
-      API.socket.off('userLoggedIn');
-      API.socket.off('message:receive', handleMessage);
+      API.socket.off(MESSAGE['send-message'], handleMessage);
     };
   }, []);
 
