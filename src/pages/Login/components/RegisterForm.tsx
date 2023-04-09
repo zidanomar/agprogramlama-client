@@ -6,11 +6,11 @@ import InputGroup from 'src/components/InputGroup';
 import Label from 'src/components/Label';
 
 import * as API from 'src/api';
-import { useAuth } from 'src/hooks';
+import { useUserStore } from 'src/store';
 
 export default function RegisterForm() {
   const navigate = useNavigate();
-  const { setUser, user } = useAuth();
+  const { setUser, clearUser } = useUserStore();
 
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -30,7 +30,7 @@ export default function RegisterForm() {
     if (!email || !password || !firstName || !lastName) return;
 
     try {
-      const { access_token } = await API.register({
+      const { access_token, user } = await API.register({
         email,
         password,
         firstName,
@@ -43,7 +43,7 @@ export default function RegisterForm() {
       navigate('/');
     } catch (error) {
       navigate('/login');
-      setUser(null);
+      clearUser();
     }
   };
 

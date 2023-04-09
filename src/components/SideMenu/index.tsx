@@ -2,11 +2,12 @@ import { Conversation } from '@prisma/client';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { conversationAPI } from 'src/api';
-import { useAuth, useDisclosure } from 'src/hooks';
+import { useDisclosure } from 'src/hooks';
+import { useUserStore } from 'src/store';
 import Button from '../Button';
 
 export default function SideMenu() {
-  const { user, setUser } = useAuth();
+  const { user, setUser, clearUser } = useUserStore();
   const navigate = useNavigate();
   const [isLoading, onLoading, onLoaded] = useDisclosure();
 
@@ -14,7 +15,7 @@ export default function SideMenu() {
 
   const logoutHandler = () => {
     localStorage.removeItem('access_token');
-    setUser(null);
+    clearUser();
     navigate('/login');
   };
 

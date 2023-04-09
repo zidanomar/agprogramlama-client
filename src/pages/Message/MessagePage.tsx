@@ -5,7 +5,8 @@ import Button from 'src/components/Button';
 import Input from 'src/components/Input';
 import Message from 'src/components/Message';
 import { MESSAGE } from 'src/constants/socket.constant';
-import { useAuth, useDisclosure, useScrollToBottom } from 'src/hooks';
+import { useDisclosure, useScrollToBottom } from 'src/hooks';
+import { useUserStore } from 'src/store';
 import { ConversationDetail, MessageDetail, SendMessage } from 'src/types';
 export default function MessagePage() {
   const [conversation, setConversation] = useState<ConversationDetail | null>(
@@ -14,7 +15,7 @@ export default function MessagePage() {
   const [message, setMessage] = useState('');
 
   const { conversationId } = useParams();
-  const { user } = useAuth();
+  const { user } = useUserStore();
   const [loading, onLoading, onLoaded] = useDisclosure();
   const scrollRef = useScrollToBottom(conversation);
 

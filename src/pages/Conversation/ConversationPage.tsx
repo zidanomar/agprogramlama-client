@@ -4,10 +4,10 @@ import Dropdown from 'src/components/Dropdown';
 import Input from 'src/components/Input';
 
 import * as API from 'src/api';
-import { useAuth } from 'src/hooks';
 import { User, Message, Prisma } from '@prisma/client';
 import { SendMessage } from 'src/types';
 import { MESSAGE } from 'src/constants/socket.constant';
+import { useUserStore } from 'src/store';
 
 export default function ConversationPage() {
   const [receiverOption, setReceiverOption] = useState<User[]>([]);
@@ -15,7 +15,7 @@ export default function ConversationPage() {
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const { user } = useAuth();
+  const { user } = useUserStore();
 
   const fetchRecivers = async () => {
     setLoading(true);
