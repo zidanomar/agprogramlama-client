@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import * as API from 'src/api';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { useAuth } from 'src/hooks';
+import { useUserStore } from 'src/store';
 export default function MainLayout() {
-  const { setUser } = useAuth();
+  const { setUser, clearUser } = useUserStore();
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -15,7 +15,7 @@ export default function MainLayout() {
       setUser(user);
       setIsLoading(false);
     } catch (error) {
-      setUser(null);
+      clearUser();
       setIsLoading(false);
       navigate('/login');
     }

@@ -6,11 +6,11 @@ import InputGroup from 'src/components/InputGroup';
 import Label from 'src/components/Label';
 
 import * as API from 'src/api';
-import { useAuth } from 'src/hooks';
+import { useUserStore } from 'src/store';
 
 export default function LoginForm() {
   const navigate = useNavigate();
-  const { setUser } = useAuth();
+  const { setUser, clearUser } = useUserStore();
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
@@ -29,9 +29,13 @@ export default function LoginForm() {
 
       setUser(user);
       navigate('/');
+      API.socket.on('connect', () => {
+        console.log('Connected to WebSocket server!');
+      });
     } catch (error) {
       navigate('/login');
-      setUser(null);
+      clearUser();
+      API.socket.disconnect();
     }
   };
 

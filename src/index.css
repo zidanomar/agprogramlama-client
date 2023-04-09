@@ -16,6 +16,8 @@
 ::-webkit-scrollbar {
   background-color: #1b1d2e;
   margin: 0;
+  width: 4px;
+  height: 4px;
 }
 
 /* Define the scrollbar track styles */

@@ -1,18 +1,9 @@
 import axios from 'axios';
-import { io } from 'socket.io-client';
 
-import { User, UserLogin, UserRegister } from 'src/types';
-
-const URL = import.meta.env.VITE_API_BASE_URL;
 const ACCESS_TOKEN = localStorage.getItem('access_token');
 
-export const socket = io(URL, {
-  extraHeaders: {
-    Authorization: `Bearer ${ACCESS_TOKEN}`,
-  },
-});
 export const API = axios.create({
-  baseURL: URL + '/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL + '/api',
   timeout: 1000 * 60,
 });
 
@@ -24,39 +15,8 @@ API.interceptors.request.use((req) => {
   return req;
 });
 
-export const getCurrentUser = async (): Promise<User> => {
-  const { data } = await API.get('/users', {
-    headers: {
-      'Cache-Control': 'no-cache',
-    },
-  });
+export { socket } from './socket';
 
-  return data;
-};
-
-export const login = async ({
-  email,
-  password,
-}: UserLogin): Promise<{ access_token: string; user: User }> => {
-  const { data } = await API.post('/auth/login', { email, password });
-
-  return data;
-};
-
-export const register = async ({
-  email,
-  password,
-  firstName,
-  lastName,
-  imageUri,
-}: UserRegister): Promise<{ access_token: string; user: User }> => {
-  const { data } = await API.post('/auth/register', {
-    email,
-    password,
-    firstName,
-    lastName,
-    imageUri,
-  });
-
-  return data;
-};
+export { login, register } from './auth.api';
+export { getCurrentUser, getReceivers } from './user.api';
+export { conversationAPI } from './conversation.api';
