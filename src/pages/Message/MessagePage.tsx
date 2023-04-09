@@ -60,15 +60,11 @@ export default function MessagePage() {
     }
 
     socket.on(MESSAGE['receive-message'], receiveMessageHandler);
-    socket.on(MESSAGE['message-sended'], (data: MessageDetail) => {
-      console.log(data);
-    });
+    socket.on(MESSAGE['message-sended'], receiveMessageHandler);
 
     return () => {
       socket.off(MESSAGE['receive-message'], receiveMessageHandler);
-      socket.off(MESSAGE['message-sended'], (data: MessageDetail) => {
-        console.log(data);
-      });
+      socket.off(MESSAGE['message-sended'], receiveMessageHandler);
     };
   }, []);
 

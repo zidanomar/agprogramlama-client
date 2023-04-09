@@ -60,9 +60,7 @@ export default function ConversationPage() {
   }, []);
 
   useEffect(() => {
-    function handleMessage(message: any): void {
-      console.log(message);
-    }
+    function handleMessage(message: any): void {}
 
     API.socket.on(MESSAGE['send-message'], handleMessage);
 
