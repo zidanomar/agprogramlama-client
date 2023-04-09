@@ -1,6 +1,6 @@
 import { API } from '.';
-import { ErrorResponse, User } from 'src/types';
 import { AxiosResponse } from 'axios';
+import { User } from '@prisma/client';
 
 export const getCurrentUser = async (): Promise<User> => {
   const { data } = await API.get('/users', {

@@ -1,5 +1,6 @@
 import { API } from '.';
-import { User, UserLogin, UserRegister } from 'src/types';
+import { UserLogin, UserRegister } from 'src/types';
+import { User } from '@prisma/client';
 
 export const login = async ({
   email,

@@ -1,7 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { MainLayout } from 'src/layout';
 import ConversationLayout from 'src/layout/ConversationLayout';
-import { ConversationPage, HomePage } from 'src/pages';
+import { ConversationPage, HomePage, MessagePage } from 'src/pages';
 import LoginPage from '../pages/Login/LoginPage';
 import PrivateRoute from './PrivateRoute';
 
@@ -24,15 +24,11 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: (
-              <PrivateRoute>
-                <ConversationPage />
-              </PrivateRoute>
-            ),
+            element: <ConversationPage />,
           },
           {
             path: ':conversationId',
-            element: <p>hello</p>,
+            element: <MessagePage />,
           },
         ],
       },

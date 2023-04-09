@@ -48,7 +48,7 @@ export default function ConversationPage() {
       const conversation: SendMessage = {
         sender: user,
         receivers,
-        content: 'hello',
+        content: 'Si ujang oaekoawekaowek',
       };
       API.socket.emit(MESSAGE['send-message'], conversation);
     }

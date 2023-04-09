@@ -17,5 +17,6 @@ API.interceptors.request.use((req) => {
 
 export { socket } from './socket';
 
-export { login, register } from './auth';
-export { getCurrentUser, getReceivers } from './user';
+export { login, register } from './auth.api';
+export { getCurrentUser, getReceivers } from './user.api';
+export { conversationAPI } from './conversation.api';

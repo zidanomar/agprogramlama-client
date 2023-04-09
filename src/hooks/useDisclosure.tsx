@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 
-export default function useDisclosure(init = false) {
+export default function useDisclosure(
+  init = false
+): [boolean, () => void, () => void] {
   const [isTrue, setIsTrue] = useState(init);
 
-  const onOpen = () => setIsTrue(true);
-  const onClose = () => setIsTrue(false);
+  const onOpen = (): void => setIsTrue(true);
+  const onClose = (): void => setIsTrue(false);
 
-  return {
-    isOpen: isTrue,
-    onOpen,
-    onClose,
-  };
+  return [isTrue, onOpen, onClose];
 }
