@@ -40,9 +40,11 @@ export default function RegisterForm() {
 
       localStorage.setItem('access_token', access_token);
       setUser(user);
+      API.socket.connect();
       navigate('/');
     } catch (error) {
       navigate('/login');
+      API.socket.disconnect();
       clearUser();
     }
   };

@@ -28,10 +28,8 @@ export default function LoginForm() {
       localStorage.setItem('access_token', access_token);
 
       setUser(user);
+      API.socket.connect();
       navigate('/');
-      API.socket.on('connect', () => {
-        console.log('Connected to WebSocket server!');
-      });
     } catch (error) {
       navigate('/login');
       clearUser();
