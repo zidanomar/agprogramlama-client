@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import * as API from 'src/api';
 import { Outlet, useNavigate } from 'react-router-dom';
+import { userAPI } from 'src/api';
 import { useUserStore } from 'src/store';
 export default function MainLayout() {
   const { setUser, clearUser } = useUserStore();
@@ -10,7 +10,7 @@ export default function MainLayout() {
   const getUser = async () => {
     setIsLoading(true);
     try {
-      const user = await API.getCurrentUser();
+      const user = await userAPI.getCurrentUser();
 
       setUser(user);
       setIsLoading(false);

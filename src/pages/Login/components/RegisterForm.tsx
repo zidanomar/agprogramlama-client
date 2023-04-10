@@ -1,11 +1,11 @@
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authAPI, socket } from 'src/api';
 import Button from 'src/components/Button';
 import Input from 'src/components/Input';
 import InputGroup from 'src/components/InputGroup';
 import Label from 'src/components/Label';
 
-import * as API from 'src/api';
 import { useUserStore } from 'src/store';
 
 export default function RegisterForm() {
@@ -30,7 +30,7 @@ export default function RegisterForm() {
     if (!email || !password || !firstName || !lastName) return;
 
     try {
-      const { access_token, user } = await API.register({
+      const { access_token, user } = await authAPI.register({
         email,
         password,
         firstName,
@@ -40,11 +40,11 @@ export default function RegisterForm() {
 
       localStorage.setItem('access_token', access_token);
       setUser(user);
-      API.socket.connect();
+      socket.connect();
       navigate('/');
     } catch (error) {
       navigate('/login');
-      API.socket.disconnect();
+      socket.disconnect();
       clearUser();
     }
   };

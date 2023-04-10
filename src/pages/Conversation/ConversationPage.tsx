@@ -3,11 +3,11 @@ import Button from 'src/components/Button';
 import Dropdown from 'src/components/Dropdown';
 import Input from 'src/components/Input';
 
-import * as API from 'src/api';
-import { User, Message, Prisma } from '@prisma/client';
+import { User, Message } from '@prisma/client';
 import { SendMessage } from 'src/types';
 import { MESSAGE } from 'src/constants/socket.constant';
 import { useUserStore } from 'src/store';
+import { socket, userAPI } from 'src/api';
 
 export default function ConversationPage() {
   const [receiverOption, setReceiverOption] = useState<User[]>([]);
@@ -20,7 +20,7 @@ export default function ConversationPage() {
   const fetchRecivers = async () => {
     setLoading(true);
     try {
-      const { data, status } = await API.getReceivers();
+      const { data, status } = await userAPI.getReceivers();
 
       if (status === 200) {
         setReceiverOption(data);
@@ -50,7 +50,7 @@ export default function ConversationPage() {
         receivers,
         content: 'Si ujang oaekoawekaowek',
       };
-      API.socket.emit(MESSAGE['send-message'], conversation);
+      socket.emit(MESSAGE['send-message'], conversation);
     }
     setReceivers([]);
   };
@@ -62,10 +62,10 @@ export default function ConversationPage() {
   useEffect(() => {
     function handleMessage(message: any): void {}
 
-    API.socket.on(MESSAGE['send-message'], handleMessage);
+    socket.on(MESSAGE['send-message'], handleMessage);
 
     return () => {
-      API.socket.off(MESSAGE['send-message'], handleMessage);
+      socket.off(MESSAGE['send-message'], handleMessage);
     };
   }, []);
 
