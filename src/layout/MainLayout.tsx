@@ -1,9 +1,12 @@
+import { User } from '@prisma/client';
 import { useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { userAPI } from 'src/api';
-import { useUserStore } from 'src/store';
+import { socket, userAPI } from 'src/api';
+import { USER } from 'src/constants/socket.constant';
+import { useConversationStore, useUserStore } from 'src/store';
 export default function MainLayout() {
-  const { setUser, clearUser } = useUserStore();
+  const { user, setUser, clearUser } = useUserStore();
+  const { conversations, setConversations } = useConversationStore();
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -24,5 +27,59 @@ export default function MainLayout() {
   useEffect(() => {
     getUser();
   }, []);
+
+  useEffect(() => {
+    function handleUserConnection(data: User) {
+      if (!user) return;
+      if (user.id === data.id) {
+        const currUser = { ...user, socketId: data.socketId };
+        setUser(currUser);
+      } else {
+        const updatedConversations = conversations.map((conversation) => {
+          if (conversation.type === 'PERSONAL') {
+            const updatedUsers = conversation.users.map((u) => {
+              if (u.id === data.id) {
+                return data;
+              }
+              return u;
+            });
+            return { ...conversation, users: updatedUsers };
+          }
+          return conversation;
+        });
+        setConversations(updatedConversations);
+      }
+    }
+
+    function handleUserDisconnection(data: User) {
+      console.log(data);
+      if (!user) return;
+      if (user.id !== data.id) {
+        const updatedConversations = conversations.map((conversation) => {
+          if (conversation.type === 'PERSONAL') {
+            const updatedUsers = conversation.users.map((u) => {
+              if (u.id === data.id) {
+                return data;
+              }
+              return u;
+            });
+            return { ...conversation, users: updatedUsers };
+          }
+          return conversation;
+        });
+        setConversations(updatedConversations);
+      } else {
+        clearUser();
+      }
+    }
+
+    socket.on(USER['user-connected'], handleUserConnection);
+    socket.on(USER['user-disconnected'], handleUserDisconnection);
+
+    return () => {
+      socket.off(USER['user-connected'], handleUserConnection);
+      socket.off(USER['user-disconnected'], handleUserDisconnection);
+    };
+  }, [user]);
   return <main>{isLoading ? <div>Loading...</div> : <Outlet />}</main>;
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { socket } from 'src/api';
+import { conversationAPI, socket } from 'src/api';
 import Button from 'src/components/Button';
 import Input from 'src/components/Input';
 import Message from 'src/components/Message';
@@ -34,9 +34,11 @@ export default function MessagePage() {
     try {
       if (!conversationId) throw new Error('No conversation id provided.');
 
-      const conversation = conversations.find((c) => c.id === conversationId);
-      if (!conversation) throw new Error('Conversation not found.');
-      setConversation(conversation);
+      const { statusText, data } = await conversationAPI.getConversationById(
+        id
+      );
+      if (statusText !== 'OK') throw new Error('Error fetching messages.');
+      setConversation(data);
     } catch (error) {
     } finally {
       onLoaded();
@@ -50,6 +52,7 @@ export default function MessagePage() {
 
   useEffect(() => {
     function receiveMessageHandler(data: MessageDetail) {
+      if (data.conversationId !== conversationId) return;
       setNewMessage({
         id: data.id,
         content: data.content,

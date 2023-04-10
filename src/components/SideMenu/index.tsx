@@ -1,15 +1,13 @@
-import { User } from '@prisma/client';
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { conversationAPI, socket } from 'src/api';
-import { USER } from 'src/constants/socket.constant';
 import { useDisclosure } from 'src/hooks';
 import { useConversationStore, useUserStore } from 'src/store';
 import Button from '../Button';
 import PersonalChat from '../PersonalChat';
 
 export default function SideMenu() {
-  const { user, setUser, clearUser } = useUserStore();
+  const { user, clearUser } = useUserStore();
   const navigate = useNavigate();
   const [isLoading, onLoading, onLoaded] = useDisclosure();
 
@@ -40,33 +38,6 @@ export default function SideMenu() {
 
   useEffect(() => {
     fetchConversations();
-  }, []);
-
-  useEffect(() => {
-    function handleUserConnection(data: User) {
-      const updatedConversations = conversations.map((conversation) => {
-        if (conversation.type === 'PERSONAL') {
-          const updatedUsers = conversation.users.map((u) => {
-            if (u.id === data.id) {
-              return data;
-            }
-            return u;
-          });
-          return { ...conversation, users: updatedUsers };
-        }
-        return conversation;
-      });
-
-      setConversations(updatedConversations);
-    }
-
-    socket.on(USER['user-connected'], handleUserConnection);
-    socket.on(USER['user-disconnected'], handleUserConnection);
-
-    return () => {
-      socket.off(USER['user-connected'], handleUserConnection);
-      socket.off(USER['user-disconnected'], handleUserConnection);
-    };
   }, []);
 
   return (
