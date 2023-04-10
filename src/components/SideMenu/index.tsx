@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { conversationAPI } from 'src/api';
 import { useDisclosure } from 'src/hooks';
-import { useUserStore } from 'src/store';
+import { useConversationStore, useUserStore } from 'src/store';
 import Button from '../Button';
 
 export default function SideMenu() {
@@ -11,7 +11,7 @@ export default function SideMenu() {
   const navigate = useNavigate();
   const [isLoading, onLoading, onLoaded] = useDisclosure();
 
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const { conversations, setConversations } = useConversationStore();
 
   const logoutHandler = () => {
     localStorage.removeItem('access_token');
