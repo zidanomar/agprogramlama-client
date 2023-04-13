@@ -14,7 +14,7 @@ const PATH = '/conversation';
 export const conversationAPI = {
   // ===================== GET =====================
   getConversationsByUserId: async () => {
-    const res: AxiosResponse<ConversationDetail[]> = await API.get(PATH);
+    const res: AxiosResponse<ConversationWithUsers[]> = await API.get(PATH);
     return res;
   },
   getConversationById: async (conversationId: string) => {

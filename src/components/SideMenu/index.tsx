@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { conversationAPI, socket } from 'src/api';
+import { CONVERSATION } from 'src/constants/socket.constant';
 import { useDisclosure } from 'src/hooks';
 import { useConversationStore, useUserStore } from 'src/store';
+import { ConversationWithUsers } from 'src/types';
 import Button from '../Button';
 import GroupChat from '../GroupChat/GroupChat';
 import PersonalChat from '../PersonalChat';
@@ -12,7 +14,8 @@ export default function SideMenu() {
   const navigate = useNavigate();
   const [isLoading, onLoading, onLoaded] = useDisclosure();
 
-  const { conversations, setConversations } = useConversationStore();
+  const { conversations, setConversations, updateConversations } =
+    useConversationStore();
 
   const logoutHandler = () => {
     localStorage.removeItem('access_token');
@@ -41,10 +44,23 @@ export default function SideMenu() {
     fetchConversations();
   }, []);
 
+  useEffect(() => {
+    function newConversationHandler(conversation: ConversationWithUsers) {
+      updateConversations(conversation);
+    }
+    socket.on(CONVERSATION['conversation-created'], newConversationHandler);
+
+    return () => {
+      socket.off(CONVERSATION['conversation-created'], newConversationHandler);
+    };
+  }, []);
+
   return (
     <div className='flex flex-col h-full'>
       <div className='h-24'>
-        <div>{user?.firstName}</div>
+        <div>
+          {user?.firstName} {user?.lastName}
+        </div>
       </div>
       <Link to='/conversations'>
         <h3>Conversations</h3>

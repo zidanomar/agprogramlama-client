@@ -1,13 +1,13 @@
 import { ConversationType, User } from '@prisma/client';
 import React, { useEffect, useState } from 'react';
-import { conversationAPI, userAPI } from 'src/api';
+import { conversationAPI, socket, userAPI } from 'src/api';
 import Button from 'src/components/Button';
 import Dropdown from 'src/components/Dropdown';
 import Input from 'src/components/Input';
 import Label from 'src/components/Label';
+import { USER } from 'src/constants/socket.constant';
 import { useDisclosure } from 'src/hooks';
 import { useConversationStore, useUserStore } from 'src/store';
-import { ConversationWithUsers } from 'src/types';
 
 export default function CreateGroupPage() {
   const [receivers, setReceivers] = useState<User[]>([]);
@@ -65,8 +65,25 @@ export default function CreateGroupPage() {
       setReceivers([]);
     }
   };
+
   useEffect(() => {
     fetchRecivers();
+  }, []);
+
+  useEffect(() => {
+    function handleUserLogin(data: User) {
+      // if new user is logged in, update option list
+      setReceiverOption((prev) =>
+        prev.map((r) => (r.id === data.id ? data : r))
+      );
+      // if new user is logged in, update existing user in receiver list
+      setReceivers((prev) => prev.map((r) => (r.id === data.id ? data : r)));
+    }
+    socket.on(USER['user-connected'], handleUserLogin);
+
+    return () => {
+      socket.off(USER['user-connected'], handleUserLogin);
+    };
   }, []);
 
   return (
@@ -96,7 +113,7 @@ export default function CreateGroupPage() {
                 value: JSON.stringify(r),
                 label: `${r.firstName} ${r.lastName}`,
               }))}
-              className='w-full'
+              className={`w-full`}
               onChange={selectReciverHandler}
             />
           )}
