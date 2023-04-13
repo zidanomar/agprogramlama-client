@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom';
+
 import { useUserStore } from 'src/store';
 
 export default function Home() {
   const { user } = useUserStore();
+
   return (
     <div className='flex flex-col gap-8 h-screen w-full justify-center items-center'>
       <div className='flex flex-col justify-center items-center gap-3 w-400 p-8 rounded-md bg-dark'>

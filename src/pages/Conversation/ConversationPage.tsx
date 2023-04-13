@@ -3,24 +3,25 @@ import Button from 'src/components/Button';
 import Dropdown from 'src/components/Dropdown';
 import Input from 'src/components/Input';
 
-import * as API from 'src/api';
-import { User, Message, Prisma } from '@prisma/client';
+import { User, Message } from '@prisma/client';
 import { SendMessage } from 'src/types';
 import { MESSAGE } from 'src/constants/socket.constant';
 import { useUserStore } from 'src/store';
+import { socket, userAPI } from 'src/api';
 
 export default function ConversationPage() {
   const [receiverOption, setReceiverOption] = useState<User[]>([]);
   const [receivers, setReceivers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   const { user } = useUserStore();
 
   const fetchRecivers = async () => {
     setLoading(true);
     try {
-      const { data, status } = await API.getReceivers();
+      const { data, status } = await userAPI.getReceivers();
 
       if (status === 200) {
         setReceiverOption(data);
@@ -44,15 +45,16 @@ export default function ConversationPage() {
   };
 
   const sendMessageHandler = () => {
-    if (user) {
+    if (user && inputRef.current?.value) {
       const conversation: SendMessage = {
         sender: user,
         receivers,
-        content: 'Si ujang oaekoawekaowek',
+        content: inputRef.current?.value,
       };
-      API.socket.emit(MESSAGE['send-message'], conversation);
+      socket.emit(MESSAGE['send-message'], conversation);
     }
     setReceivers([]);
+    inputRef.current!.value = '';
   };
 
   useEffect(() => {
@@ -62,10 +64,10 @@ export default function ConversationPage() {
   useEffect(() => {
     function handleMessage(message: any): void {}
 
-    API.socket.on(MESSAGE['send-message'], handleMessage);
+    socket.on(MESSAGE['send-message'], handleMessage);
 
     return () => {
-      API.socket.off(MESSAGE['send-message'], handleMessage);
+      socket.off(MESSAGE['send-message'], handleMessage);
     };
   }, []);
 
@@ -98,7 +100,7 @@ export default function ConversationPage() {
       )}
 
       <div className='w-full flex absolute bottom-0 gap-8'>
-        <Input className='bg-transparent text-white' />
+        <Input ref={inputRef} className='bg-transparent text-white' />
         <Button disabled={!receivers.length} onClick={sendMessageHandler}>
           send
         </Button>

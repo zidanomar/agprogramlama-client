@@ -1,21 +1,22 @@
-import { Conversation } from '@prisma/client';
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { conversationAPI } from 'src/api';
+import { conversationAPI, socket } from 'src/api';
 import { useDisclosure } from 'src/hooks';
-import { useUserStore } from 'src/store';
+import { useConversationStore, useUserStore } from 'src/store';
 import Button from '../Button';
+import PersonalChat from '../PersonalChat';
 
 export default function SideMenu() {
-  const { user, setUser, clearUser } = useUserStore();
+  const { user, clearUser } = useUserStore();
   const navigate = useNavigate();
   const [isLoading, onLoading, onLoaded] = useDisclosure();
 
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const { conversations, setConversations } = useConversationStore();
 
   const logoutHandler = () => {
     localStorage.removeItem('access_token');
     clearUser();
+    socket.disconnect();
     navigate('/login');
   };
 
@@ -48,11 +49,22 @@ export default function SideMenu() {
       <div className='flex flex-col gap-4 h-full my-8 overflow-auto'>
         {isLoading && <div>Loading...</div>}
         {conversations &&
-          conversations.map((conversation) => (
-            <Link key={conversation.id} to={conversation.id}>
-              {conversation.name}
-            </Link>
-          ))}
+          conversations.map((conversation) =>
+            conversation.type === 'PERSONAL' ? (
+              <PersonalChat
+                conversationId={conversation.id}
+                isOnline={
+                  conversation.users.find((u) => u.id !== user?.id)?.socketId
+                    ? true
+                    : false
+                }
+                key={conversation.id}
+                name={conversation.users.find((u) => u.id !== user?.id)?.email}
+              />
+            ) : (
+              <p>group</p>
+            )
+          )}
       </div>
       <div className='flex justify-center items-center'>
         <Button onClick={logoutHandler}>logout</Button>
