@@ -1,18 +1,22 @@
-import { User } from '@prisma/client';
+import { ConversationType, User } from '@prisma/client';
 import React, { useEffect, useState } from 'react';
-import { userAPI } from 'src/api';
+import { conversationAPI, userAPI } from 'src/api';
 import Button from 'src/components/Button';
 import Dropdown from 'src/components/Dropdown';
 import Input from 'src/components/Input';
 import Label from 'src/components/Label';
 import { useDisclosure } from 'src/hooks';
+import { useConversationStore, useUserStore } from 'src/store';
+import { ConversationWithUsers } from 'src/types';
 
 export default function CreateGroupPage() {
   const [receivers, setReceivers] = useState<User[]>([]);
   const [receiverOption, setReceiverOption] = useState<User[]>([]);
-  const [loading, onLoading, onLoaded] = useDisclosure();
-
   const [groupName, setGroupName] = useState('');
+
+  const [loading, onLoading, onLoaded] = useDisclosure();
+  const { user } = useUserStore();
+  const { conversations, setConversations } = useConversationStore();
 
   const fetchRecivers = async () => {
     onLoading();
@@ -40,11 +44,26 @@ export default function CreateGroupPage() {
     });
   };
 
-  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(groupName, receivers);
-    setGroupName('');
-    setReceivers([]);
+    try {
+      if (!user) return;
+      console.log(user, receivers);
+      const { data } = await conversationAPI.createGroupConversation({
+        name: groupName,
+        receivers: receivers,
+        sender: user,
+        type: 'GROUP',
+      });
+
+      const newConversation = [data, ...conversations];
+      setConversations(newConversation);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setGroupName('');
+      setReceivers([]);
+    }
   };
   useEffect(() => {
     fetchRecivers();
@@ -86,6 +105,7 @@ export default function CreateGroupPage() {
         <Button
           className='self-end'
           disabled={!groupName.length || !receivers.length}
+          type='submit'
         >
           Create New Group
         </Button>

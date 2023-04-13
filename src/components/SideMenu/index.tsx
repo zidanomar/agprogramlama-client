@@ -4,6 +4,7 @@ import { conversationAPI, socket } from 'src/api';
 import { useDisclosure } from 'src/hooks';
 import { useConversationStore, useUserStore } from 'src/store';
 import Button from '../Button';
+import GroupChat from '../GroupChat/GroupChat';
 import PersonalChat from '../PersonalChat';
 
 export default function SideMenu() {
@@ -54,17 +55,22 @@ export default function SideMenu() {
           conversations.map((conversation) =>
             conversation.type === 'PERSONAL' ? (
               <PersonalChat
+                key={conversation.id}
                 conversationId={conversation.id}
                 isOnline={
                   conversation.users.find((u) => u.id !== user?.id)?.socketId
                     ? true
                     : false
                 }
-                key={conversation.id}
                 name={conversation.users.find((u) => u.id !== user?.id)?.email}
               />
             ) : (
-              <p>group</p>
+              <GroupChat
+                key={conversation.id}
+                conversationId={conversation.id}
+                name={conversation.name}
+                users={conversation.users}
+              />
             )
           )}
       </div>

@@ -1,12 +1,12 @@
 import { Message } from '@prisma/client';
-import { ConversationDetail } from 'src/types';
+import { ConversationDetail, ConversationWithUsers } from 'src/types';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
 interface IConversationStore {
-  conversations: ConversationDetail[];
+  conversations: ConversationWithUsers[];
   conversation: ConversationDetail | null;
-  setConversations: (conversations: ConversationDetail[]) => void;
+  setConversations: (conversations: ConversationWithUsers[]) => void;
   setConversation: (conversation: ConversationDetail) => void;
   setNewMessage: (newMessage: Message) => void;
 }
@@ -17,7 +17,7 @@ export const useConversationStore = create<IConversationStore>(
   devtools((set) => ({
     conversations: [],
     conversation: null,
-    setConversations: (conversations: ConversationDetail[]) =>
+    setConversations: (conversations: ConversationWithUsers[]) =>
       set({ conversations }),
     setConversation: (conversation: ConversationDetail) =>
       set({ conversation }),
