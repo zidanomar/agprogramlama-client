@@ -45,7 +45,9 @@ export default function SideMenu() {
       <div className='h-24'>
         <div>{user?.firstName}</div>
       </div>
-      <Link to='/conversations'>Conversations</Link>
+      <Link to='/conversations'>
+        <h3>Conversations</h3>
+      </Link>
       <div className='flex flex-col gap-4 h-full my-8 overflow-auto'>
         {isLoading && <div>Loading...</div>}
         {conversations &&

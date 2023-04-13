@@ -56,6 +56,22 @@ body {
   background-color: #1b1d2e;
 }
 
+h3 {
+  font-size: 1.5em;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+a {
+  color: #7754b2;
+  text-decoration: none;
+  transition: all 0.25s;
+}
+
+a:hover {
+  color: #a682e4;
+}
+
 /* button {
   border-radius: 8px;
   border: 1px solid transparent;

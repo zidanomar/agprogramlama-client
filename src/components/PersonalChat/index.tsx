@@ -21,9 +21,9 @@ export default function PersonalChat(props: Props) {
         paramId === conversationId ? activeStyle : ''
       } p-4 hover:bg-darkest hover:rounded-md transition-all duration-300 ease-in-out cursor-pointer`}
     >
-      <h3 className={isOnline ? 'text-primary' : 'text-gray-500'}>
+      <p className={isOnline ? 'text-primary' : 'text-gray-500'}>
         {name || 'user'}
-      </h3>
+      </p>
     </Link>
   );
 }

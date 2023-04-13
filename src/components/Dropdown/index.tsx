@@ -9,16 +9,16 @@ type DropdownProps = {
   id?: string;
   className?: string;
   name?: string;
-  values?: Value[];
-  clickHandler?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  values: Value[];
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 };
 
 export default function Dropdown(props: DropdownProps) {
-  const { values, className, clickHandler, ...restProps } = props;
+  const { values, className, onChange, ...restProps } = props;
   return (
     <select
       className={`bg-gray-200 border border-gray-400 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 ${className}`}
-      onChange={clickHandler}
+      onChange={onChange}
       {...restProps}
     >
       {values?.map(({ value, label }, idx) => (
