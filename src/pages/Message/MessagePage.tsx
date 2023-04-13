@@ -16,7 +16,7 @@ export default function MessagePage() {
   const { conversationId } = useParams();
   const { user } = useUserStore();
   const [loading, onLoading, onLoaded] = useDisclosure();
-  const scrollRef = useScrollToBottom(conversation);
+  const scrollRef = useScrollToBottom(conversation?.messages);
 
   const sendMessage = () => {
     if (!user || !message) return;
@@ -61,6 +61,7 @@ export default function MessagePage() {
         seen: data.seen,
         sentAt: data.sentAt,
       });
+      console.log(data);
     }
 
     socket.on(MESSAGE['receive-message'], receiveMessageHandler);

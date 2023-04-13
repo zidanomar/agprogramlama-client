@@ -37,49 +37,28 @@ export default function MainLayout() {
       } else {
         const updatedConversations = conversations.map((conversation) => {
           if (conversation.type === 'PERSONAL') {
-            const updatedUsers = conversation.users.map((u) => {
-              if (u.id === data.id) {
-                return data;
+            const updatedUsers = conversation.users.map((user) => {
+              if (user.id === data.id) {
+                return { ...user, socketId: data.socketId };
               }
-              return u;
+              return user;
             });
             return { ...conversation, users: updatedUsers };
           }
           return conversation;
         });
-        setConversations(updatedConversations);
-      }
-    }
 
-    function handleUserDisconnection(data: User) {
-      console.log(data);
-      if (!user) return;
-      if (user.id !== data.id) {
-        const updatedConversations = conversations.map((conversation) => {
-          if (conversation.type === 'PERSONAL') {
-            const updatedUsers = conversation.users.map((u) => {
-              if (u.id === data.id) {
-                return data;
-              }
-              return u;
-            });
-            return { ...conversation, users: updatedUsers };
-          }
-          return conversation;
-        });
         setConversations(updatedConversations);
-      } else {
-        clearUser();
       }
     }
 
     socket.on(USER['user-connected'], handleUserConnection);
-    socket.on(USER['user-disconnected'], handleUserDisconnection);
+    socket.on(USER['user-disconnected'], handleUserConnection);
 
     return () => {
       socket.off(USER['user-connected'], handleUserConnection);
-      socket.off(USER['user-disconnected'], handleUserDisconnection);
+      socket.off(USER['user-disconnected'], handleUserConnection);
     };
-  }, [user]);
+  }, [user, conversations]);
   return <main>{isLoading ? <div>Loading...</div> : <Outlet />}</main>;
 }

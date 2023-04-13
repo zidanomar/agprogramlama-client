@@ -14,6 +14,7 @@ export default function ConversationPage() {
   const [receivers, setReceivers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   const { user } = useUserStore();
 
@@ -44,15 +45,16 @@ export default function ConversationPage() {
   };
 
   const sendMessageHandler = () => {
-    if (user) {
+    if (user && inputRef.current?.value) {
       const conversation: SendMessage = {
         sender: user,
         receivers,
-        content: 'Si ujang oaekoawekaowek',
+        content: inputRef.current?.value,
       };
       socket.emit(MESSAGE['send-message'], conversation);
     }
     setReceivers([]);
+    inputRef.current!.value = '';
   };
 
   useEffect(() => {
@@ -98,7 +100,7 @@ export default function ConversationPage() {
       )}
 
       <div className='w-full flex absolute bottom-0 gap-8'>
-        <Input className='bg-transparent text-white' />
+        <Input ref={inputRef} className='bg-transparent text-white' />
         <Button disabled={!receivers.length} onClick={sendMessageHandler}>
           send
         </Button>
