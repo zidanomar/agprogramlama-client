@@ -3,19 +3,20 @@ import Button from 'src/components/Button';
 import Dropdown from 'src/components/Dropdown';
 import Input from 'src/components/Input';
 
-import { User } from '@prisma/client';
-import { SendMessage } from 'src/types';
-import { MESSAGE } from 'src/constants/socket.constant';
-import { useUserStore } from 'src/store';
-import { socket, userAPI } from 'src/api';
+import { ConversationType, User } from '@prisma/client';
+import { CONVERSATION, MESSAGE } from 'src/constants/socket.constant';
+import { useConversationStore, useUserStore } from 'src/store';
+import { conversationAPI, socket, userAPI } from 'src/api';
+import { ConversationWithUsers } from 'src/types';
 
 export default function BroadcastPage() {
   const [receiverOption, setReceiverOption] = useState<User[]>([]);
   const [receivers, setReceivers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const [message, setMessage] = useState('');
 
   const { user } = useUserStore();
+  const { updateConversations } = useConversationStore();
 
   const fetchRecivers = async () => {
     setLoading(true);
@@ -43,17 +44,26 @@ export default function BroadcastPage() {
     });
   };
 
-  const sendMessageHandler = () => {
-    if (user && inputRef.current?.value) {
-      const conversation: SendMessage = {
+  const sendMessageHandler = async () => {
+    if (!message || !user) return;
+
+    try {
+      const { data } = await conversationAPI.sendBroadcastMessage({
+        content: message,
         sender: user,
-        receivers,
-        content: inputRef.current?.value,
-      };
-      socket.emit(MESSAGE['send-message'], conversation);
+        receivers: receivers,
+        type: 'PERSONAL',
+      });
+
+      setReceivers([]);
+      setMessage('');
+
+      data.forEach((c) => {
+        updateConversations(c);
+      });
+    } catch (error) {
+      console.error(error);
     }
-    setReceivers([]);
-    inputRef.current!.value = '';
   };
 
   useEffect(() => {
@@ -61,12 +71,14 @@ export default function BroadcastPage() {
   }, []);
 
   useEffect(() => {
-    function handleMessage(message: any): void {}
+    function handleBroadcastMessage(data: ConversationWithUsers) {
+      updateConversations(data);
+    }
 
-    socket.on(MESSAGE['send-message'], handleMessage);
+    socket.on(CONVERSATION['broadcast-sent'], handleBroadcastMessage);
 
     return () => {
-      socket.off(MESSAGE['send-message'], handleMessage);
+      socket.off(CONVERSATION['broadcast-sent'], handleBroadcastMessage);
     };
   }, []);
 
@@ -81,6 +93,7 @@ export default function BroadcastPage() {
               value: JSON.stringify(receiver),
               label: `${receiver.firstName} ${receiver.lastName}`,
             }))}
+            multiple={true}
             onChange={selectReciverHandler}
           />
         </div>
@@ -99,8 +112,15 @@ export default function BroadcastPage() {
       )}
 
       <div className='w-full flex absolute bottom-0 gap-8'>
-        <Input ref={inputRef} className='bg-transparent text-white' />
-        <Button disabled={!receivers.length} onClick={sendMessageHandler}>
+        <Input
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className='bg-transparent text-white'
+        />
+        <Button
+          disabled={!receivers.length || !message}
+          onClick={sendMessageHandler}
+        >
           send
         </Button>
       </div>

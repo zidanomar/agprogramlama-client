@@ -10,6 +10,13 @@ export type CreateGroupConversationDto = {
   type: 'GROUP';
 };
 
+export type SendBroadcastMessageDto = {
+  sender: User;
+  receivers: User[];
+  content: string;
+  type: 'PERSONAL';
+};
+
 const PATH = '/conversation';
 export const conversationAPI = {
   // ===================== GET =====================
@@ -25,9 +32,16 @@ export const conversationAPI = {
   },
   // ===================== POST =====================
   createGroupConversation: async (data: CreateGroupConversationDto) => {
-    console.log(data);
     const res: AxiosResponse<ConversationWithUsers> = await API.post(
       `${PATH}/new-group`,
+      data
+    );
+    return res;
+  },
+
+  sendBroadcastMessage: async (data: SendBroadcastMessageDto) => {
+    const res: AxiosResponse<ConversationWithUsers[]> = await API.post(
+      `${PATH}/broadcast`,
       data
     );
     return res;

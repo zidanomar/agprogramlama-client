@@ -18,7 +18,6 @@ export const useConversationStore = create<IConversationStore>(
     updateConversations: (conversation: ConversationWithUsers) => {
       const { conversations } = useConversationStore.getState();
       const index = conversations.findIndex((c) => c.id === conversation.id);
-      console.log(conversation);
       if (typeof index !== 'undefined' && index >= 0) {
         const newState = [
           conversation,

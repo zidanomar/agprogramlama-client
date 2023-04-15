@@ -10,6 +10,7 @@ type DropdownProps = {
   className?: string;
   name?: string;
   values: Value[];
+  multiple?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 };
 
