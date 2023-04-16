@@ -65,7 +65,7 @@ export default function SideMenu() {
       <Link to='/conversations'>
         <h3>Conversations</h3>
       </Link>
-      <div className='flex flex-col gap-4 h-full my-8 overflow-auto'>
+      <div className='flex flex-col gap-4 h-full my-8 pr-2 overflow-auto'>
         {isLoading && <div>Loading...</div>}
         {conversations &&
           conversations.map((conversation) =>

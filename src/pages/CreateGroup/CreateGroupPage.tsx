@@ -48,7 +48,6 @@ export default function CreateGroupPage() {
     e.preventDefault();
     try {
       if (!user) return;
-      console.log(user, receivers);
       const { data } = await conversationAPI.createGroupConversation({
         name: groupName,
         receivers: receivers,

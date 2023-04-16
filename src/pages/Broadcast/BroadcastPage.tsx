@@ -4,7 +4,7 @@ import Dropdown from 'src/components/Dropdown';
 import Input from 'src/components/Input';
 
 import { ConversationType, User } from '@prisma/client';
-import { CONVERSATION, MESSAGE } from 'src/constants/socket.constant';
+import { CONVERSATION, MESSAGE, USER } from 'src/constants/socket.constant';
 import { useConversationStore, useUserStore } from 'src/store';
 import { conversationAPI, socket, userAPI } from 'src/api';
 import { ConversationWithUsers } from 'src/types';
@@ -59,7 +59,7 @@ export default function BroadcastPage() {
       setMessage('');
 
       data.forEach((c) => {
-        updateConversations(c);
+        updateConversations(c.conversation);
       });
     } catch (error) {
       console.error(error);
@@ -74,11 +74,24 @@ export default function BroadcastPage() {
     function handleBroadcastMessage(data: ConversationWithUsers) {
       updateConversations(data);
     }
+    function handleUserConnection(data: User) {
+      setReceivers((prev) =>
+        prev.some((item) => item.id === data.id)
+          ? prev.map((item) =>
+              item.id === data.id ? { ...item, socketId: data.socketId } : item
+            )
+          : prev
+      );
+    }
 
     socket.on(CONVERSATION['broadcast-sent'], handleBroadcastMessage);
+    socket.on(USER['user-connected'], handleUserConnection);
+    socket.on(USER['user-disconnected'], handleUserConnection);
 
     return () => {
       socket.off(CONVERSATION['broadcast-sent'], handleBroadcastMessage);
+      socket.off(USER['user-connected'], handleUserConnection);
+      socket.off(USER['user-disconnected'], handleUserConnection);
     };
   }, []);
 
@@ -89,6 +102,7 @@ export default function BroadcastPage() {
       ) : (
         <div>
           <Dropdown
+            className='bg-transparent text-white'
             values={receiverOption.map((receiver) => ({
               value: JSON.stringify(receiver),
               label: `${receiver.firstName} ${receiver.lastName}`,

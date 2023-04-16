@@ -1,17 +1,17 @@
 import { useEffect, useRef } from 'react';
 
-const useScrollToBottom = (
-  newMessage: any
-): React.RefObject<HTMLDivElement> => {
+const useScrollToBottom = (loader: any): React.RefObject<HTMLDivElement> => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [newMessage]);
+  }, [loader]);
 
   return messagesEndRef;
 };

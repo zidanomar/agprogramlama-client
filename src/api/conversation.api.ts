@@ -1,4 +1,4 @@
-import { ConversationType, User } from '@prisma/client';
+import { ConversationType, Message, User } from '@prisma/client';
 import { AxiosResponse } from 'axios';
 import { ConversationDetail, ConversationWithUsers } from 'src/types';
 import { API } from '.';
@@ -40,10 +40,9 @@ export const conversationAPI = {
   },
 
   sendBroadcastMessage: async (data: SendBroadcastMessageDto) => {
-    const res: AxiosResponse<ConversationWithUsers[]> = await API.post(
-      `${PATH}/broadcast`,
-      data
-    );
+    const res: AxiosResponse<
+      { conversation: ConversationWithUsers; message: Message }[]
+    > = await API.post(`${PATH}/broadcast`, data);
     return res;
   },
 };

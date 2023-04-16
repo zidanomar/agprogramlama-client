@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { conversationAPI, socket } from 'src/api';
@@ -9,24 +10,25 @@ import { useDisclosure, useScrollToBottom } from 'src/hooks';
 import { useConversationStore, useUserStore } from 'src/store';
 import { MessageDetail, SendMessage } from 'src/types';
 export default function MessagePage() {
-  const { conversation, conversations, setConversation, setNewMessage } =
-    useConversationStore();
-  const [message, setMessage] = useState('');
+  const [content, setContent] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const { conversationId } = useParams();
   const { user } = useUserStore();
   const [loading, onLoading, onLoaded] = useDisclosure();
-  const scrollRef = useScrollToBottom(conversation?.messages);
+  useConversationStore();
+  const { conversation, setMessage, setConversation } = useConversationStore();
+  const scrollRef = useScrollToBottom(loading);
 
   const sendMessage = () => {
-    if (!user || !message) return;
+    if (!user || !content) return;
     const messageBody: SendMessage = {
       sender: user,
       receivers: conversation!.users.filter((u) => u.id !== user.id),
-      content: message,
+      content,
     };
     socket.emit(MESSAGE['send-message'], messageBody);
-    setMessage('');
+    setContent('');
   };
 
   const fetchConversations = async (id: string) => {
@@ -39,7 +41,17 @@ export default function MessagePage() {
       );
       if (statusText !== 'OK') throw new Error('Error fetching messages.');
       setConversation(data);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response) {
+        // Handle response error
+        setError(error.response.data.message);
+      } else if (error.request) {
+        // Handle request error
+        setError('Request failed. Please try again later.');
+      } else {
+        // Handle other errors
+        setError('An error occurred. Please try again later.');
+      }
     } finally {
       onLoaded();
     }
@@ -52,32 +64,22 @@ export default function MessagePage() {
 
   useEffect(() => {
     function receiveMessageHandler(data: MessageDetail) {
-      if (data.conversationId !== conversationId) return;
-      setNewMessage({
-        id: data.id,
-        content: data.content,
-        senderId: data.senderId,
-        conversationId: data.conversationId,
-        seen: data.seen,
-        sentAt: data.sentAt,
-      });
-      console.log(data);
+      setMessage(data);
     }
 
-    socket.on(MESSAGE['receive-message'], receiveMessageHandler);
-    socket.on(MESSAGE['message-sended'], receiveMessageHandler);
+    socket.on(MESSAGE['new-message'], receiveMessageHandler);
 
     return () => {
-      socket.off(MESSAGE['receive-message'], receiveMessageHandler);
-      socket.off(MESSAGE['message-sended'], receiveMessageHandler);
+      socket.off(MESSAGE['new-message'], receiveMessageHandler);
     };
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+
   return (
     <div className='flex flex-col gap-8 h-full w-full'>
       <div className='h-full flex flex-col gap-8 overflow-auto pr-4'>
-        {conversation?.messages.map((message) => (
+        {conversation?.messages?.map((message) => (
           <Message
             key={message.id}
             content={message.content}
@@ -89,11 +91,11 @@ export default function MessagePage() {
 
       <div className='w-full flex gap-8'>
         <Input
-          value={message}
+          value={content}
           className='bg-transparent text-white'
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={(e) => setContent(e.target.value)}
         />
-        <Button disabled={!message} onClick={sendMessage}>
+        <Button disabled={!content} onClick={sendMessage}>
           send
         </Button>
       </div>
