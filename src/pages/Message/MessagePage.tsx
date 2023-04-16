@@ -18,17 +18,24 @@ export default function MessagePage() {
   const [loading, onLoading, onLoaded] = useDisclosure();
   useConversationStore();
   const { conversation, setMessage, setConversation } = useConversationStore();
-  const scrollRef = useScrollToBottom(loading);
+  const scrollRef = useScrollToBottom(conversation?.messages);
 
-  const sendMessage = () => {
-    if (!user || !content) return;
-    const messageBody: SendMessage = {
-      sender: user,
-      receivers: conversation!.users.filter((u) => u.id !== user.id),
-      content,
-    };
-    socket.emit(MESSAGE['send-message'], messageBody);
-    setContent('');
+  const sendMessage = async () => {
+    if (!user || !content || !conversation) return;
+    try {
+      const messageBody = {
+        sender: user,
+        content,
+        conversation,
+      };
+
+      const { data } = await conversationAPI.sendMessage(messageBody);
+      setMessage(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setContent('');
+    }
   };
 
   const fetchConversations = async (id: string) => {

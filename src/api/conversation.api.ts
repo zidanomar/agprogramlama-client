@@ -1,4 +1,4 @@
-import { ConversationType, Message, User } from '@prisma/client';
+import { Message, User } from '@prisma/client';
 import { AxiosResponse } from 'axios';
 import { ConversationDetail, ConversationWithUsers } from 'src/types';
 import { API } from '.';
@@ -31,6 +31,18 @@ export const conversationAPI = {
     return res;
   },
   // ===================== POST =====================
+  sendMessage: async (data: {
+    sender: User;
+    content: string;
+    conversation: ConversationWithUsers;
+  }) => {
+    const res: AxiosResponse<Message> = await API.post(
+      `${PATH}/personal-message`,
+      data
+    );
+    return res;
+  },
+
   createGroupConversation: async (data: CreateGroupConversationDto) => {
     const res: AxiosResponse<ConversationWithUsers> = await API.post(
       `${PATH}/new-group`,
