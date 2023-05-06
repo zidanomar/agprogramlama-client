@@ -1,13 +1,14 @@
+import { User } from '@prisma/client';
 import { Link, useParams } from 'react-router-dom';
 
 interface Props {
+  name: string | null;
+  users: User[];
   conversationId: string;
-  isOnline: boolean;
-  name?: string;
 }
 
-export default function PersonalChat(props: Props) {
-  const { conversationId, isOnline, name, ...rest } = props;
+export default function GroupChat(props: Props) {
+  const { conversationId, users, name, ...rest } = props;
   const { conversationId: paramId } = useParams<{
     conversationId: string;
   }>();
@@ -21,9 +22,7 @@ export default function PersonalChat(props: Props) {
         paramId === conversationId ? activeStyle : ''
       } p-4 hover:bg-darkest hover:rounded-md transition-all duration-300 ease-in-out cursor-pointer`}
     >
-      <p className={isOnline ? 'text-primary' : 'text-gray-500'}>
-        {name || 'user'}
-      </p>
+      <p className={'text-primary'}>{name || 'Group Chat'}</p>
     </Link>
   );
 }

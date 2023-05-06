@@ -15,3 +15,7 @@ export type MessageDetail = Message & {
   conversation: Conversation;
   sender: User;
 };
+
+export type ConversationWithUsers = Conversation & {
+  users: User[];
+};
