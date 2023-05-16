@@ -13,8 +13,7 @@ interface IConversationStore {
 }
 
 // User store
-export const useConversationStore = create<IConversationStore>(
-  // @ts-ignore
+export const useConversationStore = create<IConversationStore>()(
   devtools((set) => ({
     conversations: [],
     conversation: null,

@@ -9,8 +9,7 @@ interface IUserStore {
 }
 
 // User store
-export const useUserStore = create<IUserStore>(
-  // @ts-ignore
+export const useUserStore = create<IUserStore>()(
   devtools((set) => ({
     user: null,
     setUser: (user: UserAuth) => set({ user }),
