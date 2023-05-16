@@ -22,6 +22,9 @@ export default function Dropdown(props: DropdownProps) {
       onChange={onChange}
       {...restProps}
     >
+      <option value='' disabled selected hidden>
+        Select an option
+      </option>
       {values?.map(({ value, label }, idx) => (
         <option key={idx} className='py-4' value={value}>
           {label}
