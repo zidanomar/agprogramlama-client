@@ -30,6 +30,10 @@ export const conversationAPI = {
     );
     return res;
   },
+  getUnseenMessages: async () => {
+    const res: AxiosResponse<number> = await API.get(`${PATH}/unseen-messages`);
+    return res;
+  },
   // ===================== POST =====================
   sendMessage: async (data: {
     sender: User;

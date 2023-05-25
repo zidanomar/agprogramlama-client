@@ -58,9 +58,11 @@ export default function SideMenu() {
   return (
     <div className='flex flex-col h-full'>
       <div className='h-24'>
-        <div>
-          {user?.firstName} {user?.lastName}
-        </div>
+        <Link to='/'>
+          <h4>
+            {user?.firstName} {user?.lastName}
+          </h4>
+        </Link>
       </div>
       <Link to='/conversations'>
         <h3>Conversations</h3>
