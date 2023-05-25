@@ -30,6 +30,10 @@ export default function LoginForm() {
 
       localStorage.setItem('access_token', access_token);
 
+      socket.io.opts.extraHeaders = {
+        Authorization: `Bearer ${access_token}`,
+      };
+
       setUser(user);
       socket.connect();
       navigate('/');

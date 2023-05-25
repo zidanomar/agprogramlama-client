@@ -39,7 +39,13 @@ export default function RegisterForm() {
       });
 
       localStorage.setItem('access_token', access_token);
+
       setUser(user);
+
+      socket.io.opts.extraHeaders = {
+        Authorization: `Bearer ${access_token}`,
+      };
+
       socket.connect();
       navigate('/');
     } catch (error) {
